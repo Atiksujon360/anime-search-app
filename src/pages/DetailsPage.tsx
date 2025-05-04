@@ -7,7 +7,7 @@ import {
   Container,
   Box,
 } from "@mui/material";
-import axios from "axios";
+import { fetchAnimeDetails } from "../constants/api";
 import SelectActionCard from "../components/SelectActionCard";
 
 interface Anime {
@@ -29,28 +29,75 @@ const DetailsPage = () => {
   const { id } = useParams<{ id: string }>();
   const [anime, setAnime] = useState<Anime | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchAnimeDetails = async () => {
+    const fetchDetails = async () => {
       setLoading(true);
+      setError(null);
       try {
-        const response = await axios.get(
-          `https://api.jikan.moe/v4/anime/${id}`
-        );
-        setAnime(response.data.data);
-      } catch (error) {
-        console.error("Error fetching anime details:", error);
+        const animeDetails = await fetchAnimeDetails(id!);
+        setAnime(animeDetails);
+      } catch (err) {
+        console.error("Error fetching anime details:", err);
+        setError("Failed to fetch anime details. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAnimeDetails();
+    fetchDetails();
   }, [id]);
 
-  if (loading) return <CircularProgress />;
-  if (!anime) return <Typography>No details available</Typography>;
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Typography color="error" variant="h6" align="center">
+          {error}
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => navigate(-1)}
+          sx={{ mt: 2 }}
+        >
+          Back
+        </Button>
+      </Container>
+    );
+  }
+
+  if (!anime) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Typography variant="h6" align="center">
+          No details available.
+        </Typography>
+        <Button
+          variant="contained"
+          onClick={() => navigate(-1)}
+          sx={{ mt: 2 }}
+        >
+          Back
+        </Button>
+      </Container>
+    );
+  }
 
   return (
     <Container sx={{ maxWidth: "1200px", mt: { xs: 2, sm: 4, md: 6 } }}>
@@ -65,6 +112,7 @@ const DetailsPage = () => {
           alignItems: "flex-start",
         }}
       >
+        {/* Anime Image */}
         <Box
           component="img"
           src={anime.images.jpg.image_url}
@@ -72,13 +120,17 @@ const DetailsPage = () => {
           sx={{
             width: "100%",
             maxWidth: "300px",
-            height: "400px", // Fixed height
-            objectFit: "cover", // Ensures the image scales properly within the fixed height
+            height: "400px",
+            objectFit: "cover",
             borderRadius: "8px",
           }}
         />
+
+        {/* Anime Details */}
         <Box>
-          {anime.synopsis ? <Typography paragraph>{anime.synopsis}</Typography> : <Typography paragraph>No synopsis available</Typography>} 
+          <Typography paragraph>
+            {anime.synopsis || "No synopsis available."}
+          </Typography>
           <Box
             sx={{
               mt: 2,
@@ -121,12 +173,23 @@ const DetailsPage = () => {
                 "#dbf3e8",
               ]}
               cardTitleColors={["#59b2c4", "#7c757c", "#b86278", "#816f81"]}
-              cardDescriptColors={["#75d3e5", "#fa9dfa", "#f87195", "#816f81"]}
+              cardDescriptColors={[
+                "#75d3e5",
+                "#fa9dfa",
+                "#f87195",
+                "#816f81",
+              ]}
             />
           </Box>
         </Box>
       </Box>
-      <Button variant="contained" onClick={() => navigate(-1)} sx={{ mt: 2, mb: 2 }}>
+
+      {/* Back Button */}
+      <Button
+        variant="contained"
+        onClick={() => navigate(-1)}
+        sx={{ mt: 2, mb: 2 }}
+      >
         Back
       </Button>
     </Container>

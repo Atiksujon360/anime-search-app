@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import { Card, CardMedia, CardContent, Typography, Backdrop, CircularProgress } from "@mui/material";
+import {
+  Card,
+  CardMedia,
+  CardContent,
+  Typography,
+  Backdrop,
+  CircularProgress,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-type Anime = {
+interface Anime {
   mal_id: number;
   title: string;
   images: {
@@ -10,33 +17,46 @@ type Anime = {
       image_url: string;
     };
   };
-};
+}
 
-const AnimeCard = ({ anime }: { anime: Anime }) => {
+interface AnimeCardProps {
+  anime: Anime;
+}
+
+const AnimeCard: React.FC<AnimeCardProps> = ({ anime }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    setLoading(true); // Show the Backdrop
-    setTimeout(() => {
-      navigate(`/details/${anime.mal_id}`);
-      setLoading(false); // Hide the Backdrop after navigation
-    }, 500); // Simulate a delay for navigation
+    setLoading(true);
+    navigate(`/details/${anime.mal_id}`);
+    setLoading(false);
   };
 
   return (
     <>
       {/* Backdrop for loading */}
-      <Backdrop open={loading} sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Backdrop
+        open={loading}
+        sx={{
+          color: "#fff",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
 
+      {/* Anime Card */}
       <Card
         onClick={handleCardClick}
         sx={{
           cursor: "pointer",
-          width: "225px",
+          width: 225,
           margin: "auto",
+          transition: "transform 0.2s ease-in-out",
+          "&:hover": {
+            transform: "scale(1.05)",
+          },
         }}
       >
         <CardMedia

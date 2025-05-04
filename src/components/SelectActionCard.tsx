@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -16,7 +16,7 @@ const SelectActionCard: React.FC<SelectActionCardProps> = ({
       sx={{
         width: "100%",
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(min(200px, 100%), 1fr))",
+        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
         gap: 2,
       }}
     >
@@ -24,16 +24,16 @@ const SelectActionCard: React.FC<SelectActionCardProps> = ({
         <Card
           key={card.id}
           sx={{
-            backgroundColor: cardBackgroundColors[index] || "#9020e8", // Default background color
-            color: "white", // Text color
+            backgroundColor: cardBackgroundColors[index] || "#9020e8",
+            color: "white",
           }}
         >
           <CardContent sx={{ height: "100%" }}>
             <Typography
               variant="h5"
               component="div"
-              style={{
-                color: cardTitleColors[index],
+              sx={{
+                color: cardTitleColors[index] || "white",
                 fontWeight: "bold",
               }}
             >
@@ -41,11 +41,12 @@ const SelectActionCard: React.FC<SelectActionCardProps> = ({
             </Typography>
             <Typography
               variant="body2"
-              color="inherit"
-              style={{ color: cardDescriptColors[index] }}
+              sx={{
+                color: cardDescriptColors[index] || "white",
+              }}
             >
               {card.title === "users"
-                ? `${card.description} ${'Users'}`
+                ? `${card.description} Users`
                 : card.title}
             </Typography>
           </CardContent>
